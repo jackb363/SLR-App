@@ -8,7 +8,7 @@ from sklearn.model_selection import train_test_split
 from tensorflow.keras.utils import to_categorical
 
 # Path for exported data, numpy arrays
-DATA_PATH = os.path.join('C:/Users/Jack/Documents/MediaPipe_SmallDataset')
+DATA_PATH = os.path.join('C:/Users/A00275711/Documents/MediaPipe_SmallDataset')
 print(os.listdir(DATA_PATH))
 # Actions that we try to detect
 actions = np.array(os.listdir(DATA_PATH))
@@ -32,13 +32,11 @@ def label_frame():
                      os.path.isdir(os.path.join(DATA_PATH, action, name))]
         for sequence in only_dirs:
             print('processing video ', sequence, 'of', str(len(only_dirs) - 1))
-            # gets number of .npy files
-            count = len(fnmatch.filter(os.listdir(os.path.join(DATA_PATH, action, sequence)), '*.*'))
-            sequence_length = count
             window = []
-
-            for frame_num in range(sequence_length):
-                res = np.load(os.path.join(DATA_PATH, action, str(sequence), "{}.npy".format(frame_num)))
+            list_files = os.listdir(os.path.join(DATA_PATH, action, str(sequence)))
+            for frame_num in list_files:
+                print(frame_num)
+                res = np.load(os.path.join(DATA_PATH, action, str(sequence), frame_num))
                 window.append(res)
         result = np.where(actions == action)
         print(f'completed labelling of sign {str(result[0])}/{len(actions)}')
@@ -57,6 +55,7 @@ print(X.shape)
 
 
 def load_model():
+    # LSTM model 6 Layers
     model = Sequential()
     model.add(LSTM(64, return_sequences=True, activation='relu', input_shape=(30, 1662)))
     model.add(LSTM(128, return_sequences=True, activation='relu'))
