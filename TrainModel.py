@@ -1,14 +1,18 @@
 import numpy as np
 import os
 import fnmatch
+from util import *
+
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import LSTM, Dense
 from tensorflow.keras.callbacks import TensorBoard
 from sklearn.model_selection import train_test_split
 from tensorflow.keras.utils import to_categorical
+from keras.callbacks import EarlyStopping, ModelCheckpoint
+from keras.models import model_from_json
 
 # Path for exported data, numpy arrays
-DATA_PATH = os.path.join('C:/Users/A00275711/Documents/MediaPipe_SmallDataset')
+DATA_PATH = os.path.join('DATASET DIR')
 print(os.listdir(DATA_PATH))
 # Actions that we try to detect
 actions = np.array(os.listdir(DATA_PATH))
@@ -18,23 +22,27 @@ actions = np.array(os.listdir(DATA_PATH))
 log_dir = os.path.join('Logs')
 tb_callback = TensorBoard(log_dir=log_dir)
 
-sequences, labels = [], []
-
 
 # adds labels to each video frame
 def label_frame():
+    sequences, labels = [], []
     # Label data for training
     label_map = {label: num for num, label in enumerate(actions)}
+    number_err = 0
     for action in actions:
 
-        print(f'labelling videos of sign "{action}"')
+        # print(f'labelling videos of sign "{action}"')
         only_dirs = [name for name in os.listdir(os.path.join(DATA_PATH, action)) if
                      os.path.isdir(os.path.join(DATA_PATH, action, name))]
         for sequence in only_dirs:
-            print('processing video ', sequence, 'of', str(len(only_dirs) - 1))
+            # print('processing video', sequence, 'of', str(len(only_dirs) - 1))
             window = []
             list_files = os.listdir(os.path.join(DATA_PATH, action, str(sequence)))
-            for frame_num in list_files:
+
+            # sorts files so frames are in order
+            sorted_filenames = sorted(list_files, key=extract_number)
+
+            for frame_num in sorted_filenames:
                 print(frame_num)
                 res = np.load(os.path.join(DATA_PATH, action, str(sequence), frame_num))
                 window.append(res)
@@ -42,18 +50,11 @@ def label_frame():
         print(f'completed labelling of sign {str(result[0])}/{len(actions)}')
         sequences.append(window)
         labels.append(label_map[action])
+    print('number of error files :', number_err)
+    return sequences, labels
 
 
-label_frame()
-
-# Train/test split
-X = np.array(sequences, dtype=object)
-y = to_categorical(labels).astype(int)
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.03)
-
-print(X.shape)
-
-
+# model structure
 def load_model():
     # LSTM model 6 Layers
     model = Sequential()
@@ -67,12 +68,47 @@ def load_model():
     return model
 
 
-def train_model(model):
-    model.compile(optimizer='Adam', loss='categorical_crossentropy', metrics=['categorical_accuracy'])
-    # model.fit(X_train, y_train, epochs=2000, callbacks=[tb_callback])
+def train_model(model, X, y):
+    # Train/test/val split 80/10/10
+    X_train, X_rem, y_train, y_rem = train_test_split(X, y, train_size=0.8)
+    X_test, X_val, y_test, y_val = train_test_split(X_rem, y_rem, test_size=0.5)
+
+    # stops early if val score has not improved in 5 epochs
+    early_stopping = EarlyStopping(monitor='val_loss', patience=5)
+    # saves weights if val score is better than previous
+    model_checkpoint = ModelCheckpoint('action.h5', save_best_only=True, monitor='val_loss', mode='min')
+
+    model.compile(optimizer='Adam', loss='categorical_crossentropy',
+                  metrics=['categorical_accuracy'])
+    model.fit(X_train, y_train, epochs=2000, validation_data=(X_val, y_val),
+              callbacks=[early_stopping, model_checkpoint, tb_callback])
     model.save('action.h5')
 
-# call load and train
+    # evaluates model after training
+    loss, accuracy = model.evaluate(X_test, y_test, verbose=0)
+    print("Test Loss:", loss)
+    print("Test Accuracy:", accuracy)
 
-# lstm_model = load_model()
-# train_model(lstm_model)
+
+# saves model structure to json
+def save_model_json(model):
+    model_json = model.to_json()
+    with open('model.json', 'w') as json_file:
+        json_file.write(model_json)
+
+
+if __name__ == '__main__':
+    # call to create and save model struc
+    lstm_model = load_model()
+    save_model_json(lstm_model)
+    name = input("Type 'train' to train model or press 0 to quit : \n")
+    if name == 'train':
+        # call to label and group frames of same videos
+        sequences, labels = label_frame()
+        X = np.array(sequences, dtype=object)
+        y = to_categorical(labels).astype(int)
+
+        # call train and pass model struc, frame sequences and associated labels
+        train_model(lstm_model, X, y)
+    else:
+        exit()

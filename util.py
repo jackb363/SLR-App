@@ -3,11 +3,13 @@ import numpy as np
 import mediapipe as mp
 import os
 from multiprocessing import Process
+from natsort import natsorted
 
 # Holistic model
 mp_holistic = mp.solutions.holistic
 # Drawing utilities
 mp_drawing = mp.solutions.drawing_utils
+
 
 # function to call mediapipe detection
 def mediapipe_detection(image, model):
@@ -64,32 +66,24 @@ def get_files(path):
 
 # function to pad .npy files to a specified number
 def pad_npy(npy_dir, current_files, new_file_max):
-    first_file = np.load(os.path.join(npy_dir, "0.npy"))
+    # create numpy zeros array of same dimension as other files
+    zeros_array = np.array([np.zeros(33*4), np.zeros(468*4), np.zeros(21*3), np.zeros(21*3)])
     # loop to create new .npy files and copy them to a directory
     for copy_frame in range(current_files, new_file_max):
-        padded_file = first_file
+        padded_file = zeros_array
         npy_path = os.path.join(npy_dir, str(copy_frame))
         np.save(npy_path, padded_file)
 
 
 # function takes the middle number of .npy files specified
 def cut_npy(npy_dir, current_file_num, new_file_num):
-    # gets whole number of files needed to be deleted and amount needed to be deleted from start and end
-    to_remove_whole = current_file_num - new_file_num
-    to_remove_divided = to_remove_whole / 2
-    # checks to see if number is odd or even then runs file remover in parallel
-    if to_remove_whole % 2 != 0:
-        run_parallel(remove_files(npy_dir, 0, int(to_remove_divided) + 2),
-                     remove_files(npy_dir, current_file_num - int(to_remove_divided), current_file_num - 1))
-    elif to_remove_whole % 2 == 0:
-        run_parallel(remove_files(npy_dir, 0, int(to_remove_divided) + 1),
-                     remove_files(npy_dir, current_file_num - int(to_remove_divided) + 1, current_file_num))
+    file_list = natsorted(os.listdir(npy_dir))
 
 
 # removes the files at the start and end of directory
 def remove_files(dir_path, start_file, end_file):
     for filename in range(start_file, end_file):
-        os.remove(os.path.join(dir_path, str(filename)+'.npy'))
+        os.remove(os.path.join(dir_path, str(filename) + '.npy'))
 
 
 # runs tasks in parallel
@@ -101,3 +95,16 @@ def run_parallel(*functions):
         processes.append(proc)
     for process in processes:
         process.join()
+
+
+# delete all files in a specified directory
+def delete_all_files_in_dir(dir_path):
+    current_dir = os.path.split(dir_path)
+    print('Deleting Files For Directory', current_dir[1])
+    for file in os.scandir(dir_path):
+        os.remove(file.path)
+
+
+# extracts numeric part of filename
+def extract_number(file_name):
+    return int(os.path.splitext(file_name)[0])

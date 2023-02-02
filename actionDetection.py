@@ -1,4 +1,4 @@
-from function import *
+from util import *
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import LSTM, Dense
 # Frame for ID word
@@ -21,7 +21,6 @@ predictions = []
 threshold = 0.6
 
 actions = np.array(['hello', 'iloveyou', 'thanks'])
-
 # Create Model and load previous model into
 model = Sequential()
 model.add(LSTM(64, return_sequences=True, activation='relu', input_shape=(30, 1662)))
