@@ -4,6 +4,7 @@ import util
 import pathlib
 
 from tensorflow.keras.models import Sequential
+from tensorflow.keras.models import load_model
 from tensorflow.keras.layers import LSTM, Dense
 from tensorflow.keras.callbacks import TensorBoard
 from sklearn.model_selection import train_test_split
@@ -55,7 +56,7 @@ def label_frame():
 
 
 # model structure
-def load_model():
+def build_model():
     # LSTM model 6 Layers
     model = Sequential()
     model.add(LSTM(64, return_sequences=True, activation='relu', input_shape=(30, 1662)))
@@ -83,7 +84,7 @@ def train_model(model, X, y):
 
     model.fit(X_train, y_train, epochs=2000, validation_data=(X_val, y_val),
               callbacks=[early_stopping, model_checkpoint, tb_callback])
-    # final weights of trained model saved
+    # final weights and structure of trained model saved
     model.save('action.h5')
 
     # evaluates model after training
@@ -92,34 +93,36 @@ def train_model(model, X, y):
     print("Test Accuracy:", accuracy)
 
 
-# saves model structure to json and tflite
-def save_model_json_tflite(model):
-    # save to json format
+# saves model structure to json
+def save_model_struc(model):
     model_json = model.to_json()
     with open('model.json', 'w') as json_file:
         json_file.write(model_json)
-    # save to tflite format
+
+
+# saves model struc and weights to tflite file
+def save_model_tflite(h5_file):
+    model = load_model(h5_file)
     converter = lite.TFLiteConverter.from_keras_model(model)
     converter.target_spec.supported_ops = [lite.OpsSet.TFLITE_BUILTINS, lite.OpsSet.SELECT_TF_OPS]
     converter._experimental_lower_tensor_list_ops = False
     tflite_model = converter.convert()
-    # saves tflite to current directory
-    with open('model.tflite', 'wb') as f:
-        f.write(tflite_model)
+    open("model.tflite", "wb").write(tflite_model)
 
 
 if __name__ == '__main__':
     # call to create and save model struc
-    lstm_model = load_model()
-    save_model_json_tflite(lstm_model)
-    name = input("Type 'train' to train model or press 0 to quit : \n")
-    if name == 'train':
-        # call to label and group frames of same videos
-        sequences, labels = label_frame()
-        X = np.array(sequences, dtype=object)
-        y = to_categorical(labels).astype(int)
-
-        # call train and pass model struc, frame sequences and associated labels
-        train_model(lstm_model, X, y)
-    else:
-        exit()
+    lstm_model = build_model()
+    save_model_struc(lstm_model)
+    # name = input("Type 'train' to train model or press 0 to quit : \n")
+    # if name == 'train':
+    #     # call to label and group frames of same videos
+    #     sequences, labels = label_frame()
+    #     X = np.array(sequences, dtype=object)
+    #     y = to_categorical(labels).astype(int)
+    #
+    #     # call train and pass model struc, frame sequences and associated labels
+    #     train_model(lstm_model, X, y)
+    # else:
+    #     exit()
+    save_model_tflite('action.h5')
