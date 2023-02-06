@@ -1,7 +1,7 @@
 import numpy as np
 import os
-import fnmatch
-from util import *
+import util
+import pathlib
 
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import LSTM, Dense
@@ -10,10 +10,10 @@ from sklearn.model_selection import train_test_split
 from tensorflow.keras.utils import to_categorical
 from keras.callbacks import EarlyStopping, ModelCheckpoint
 from keras.models import model_from_json
+from tensorflow import lite
 
 # Path for exported data, numpy arrays
-DATA_PATH = os.path.join('DATASET DIR')
-print(os.listdir(DATA_PATH))
+DATA_PATH = os.path.join('C:/Users/A00275711/Documents/MediaPipe_SmallDataset')
 # Actions that we try to detect
 actions = np.array(os.listdir(DATA_PATH))
 # Videos are going to be 30 frames in length
@@ -40,7 +40,7 @@ def label_frame():
             list_files = os.listdir(os.path.join(DATA_PATH, action, str(sequence)))
 
             # sorts files so frames are in order
-            sorted_filenames = sorted(list_files, key=extract_number)
+            sorted_filenames = sorted(list_files, key=util.extract_number)
 
             for frame_num in sorted_filenames:
                 print(frame_num)
@@ -63,8 +63,8 @@ def load_model():
     model.add(LSTM(64, return_sequences=False, activation='relu'))
     model.add(Dense(64, activation='relu'))
     model.add(Dense(32, activation='relu'))
-    # returns a number of values equal to action types in dataset
-    model.add(Dense(actions.shape[0], activation='softmax'))
+    # returns a number of values equal to action types in dataset 'actions.shape[0]'
+    model.add(Dense(3, activation='softmax'))
     return model
 
 
@@ -75,13 +75,15 @@ def train_model(model, X, y):
 
     # stops early if val score has not improved in 5 epochs
     early_stopping = EarlyStopping(monitor='val_loss', patience=5)
-    # saves weights if val score is better than previous
+    # save weights if val score is better than previous
     model_checkpoint = ModelCheckpoint('action.h5', save_best_only=True, monitor='val_loss', mode='min')
 
     model.compile(optimizer='Adam', loss='categorical_crossentropy',
                   metrics=['categorical_accuracy'])
+
     model.fit(X_train, y_train, epochs=2000, validation_data=(X_val, y_val),
               callbacks=[early_stopping, model_checkpoint, tb_callback])
+    # final weights of trained model saved
     model.save('action.h5')
 
     # evaluates model after training
@@ -90,17 +92,26 @@ def train_model(model, X, y):
     print("Test Accuracy:", accuracy)
 
 
-# saves model structure to json
-def save_model_json(model):
+# saves model structure to json and tflite
+def save_model_json_tflite(model):
+    # save to json format
     model_json = model.to_json()
     with open('model.json', 'w') as json_file:
         json_file.write(model_json)
+    # save to tflite format
+    converter = lite.TFLiteConverter.from_keras_model(model)
+    converter.target_spec.supported_ops = [lite.OpsSet.TFLITE_BUILTINS, lite.OpsSet.SELECT_TF_OPS]
+    converter._experimental_lower_tensor_list_ops = False
+    tflite_model = converter.convert()
+    # saves tflite to current directory
+    with open('model.tflite', 'wb') as f:
+        f.write(tflite_model)
 
 
 if __name__ == '__main__':
     # call to create and save model struc
     lstm_model = load_model()
-    save_model_json(lstm_model)
+    save_model_json_tflite(lstm_model)
     name = input("Type 'train' to train model or press 0 to quit : \n")
     if name == 'train':
         # call to label and group frames of same videos
