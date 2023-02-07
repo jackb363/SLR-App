@@ -1,9 +1,8 @@
 import numpy as np
-
-from util import *
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import LSTM, Dense
+import cv2
 from tensorflow import lite
+import mediapipe as mp
+import util
 # Frame for ID word
 colors = [(245, 117, 16), (117, 245, 16), (16, 117, 245)]
 
@@ -20,6 +19,10 @@ def prob_viz(res, actions, input_frame, colors):
 
 # predicts signs using exported tflite model
 def detect_tflite(tflite_file_path):
+    # Holistic model
+    mp_holistic = mp.solutions.holistic
+    # Drawing utilities
+    mp_drawing = mp.solutions.drawing_utils
     sequence = []
     sentence = []
     predictions = []
@@ -43,19 +46,20 @@ def detect_tflite(tflite_file_path):
             ret, frame = cap.read()
 
             # Make detections
-            image, results = mediapipe_detection(frame, holistic)
+            image, results = util.mediapipe_detection(frame, holistic)
             print(results)
 
             # Draw landmarks
-            draw_styled_landmarks(image, results)
+            util.draw_styled_landmarks(image, results)
 
             # 2. Prediction logic
-            keypoints = extract_keypoints(results)
+            keypoints = util.extract_keypoints(results)
             keypoints = keypoints.astype('float32')
             sequence.append(keypoints)
             sequence = sequence[-30:]
 
             if len(sequence) == 30:
+                # add dimension so sequence is (1, 30, 1662) not (30, 1662)
                 interpreter.set_tensor(input_details[0]['index'], np.expand_dims(sequence, axis=0))
                 interpreter.invoke()
                 res = interpreter.get_tensor(output_details[0]['index'])[0]
