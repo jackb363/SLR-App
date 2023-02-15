@@ -77,7 +77,7 @@ def train_model(model, X, y):
     # stops early if val score has not improved in 5 epochs
     early_stopping = EarlyStopping(monitor='val_loss', patience=5)
     # save weights if val score is better than previous
-    model_checkpoint = ModelCheckpoint('action.h5', save_best_only=True, monitor='val_loss', mode='min')
+    model_checkpoint = ModelCheckpoint('res/action.h5', save_best_only=True, monitor='val_loss', mode='min')
 
     model.compile(optimizer='Adam', loss='categorical_crossentropy',
                   metrics=['categorical_accuracy'])
@@ -96,7 +96,7 @@ def train_model(model, X, y):
 # saves model structure to json
 def save_model_struc(model):
     model_json = model.to_json()
-    with open('model.json', 'w') as json_file:
+    with open('res/model.json', 'w') as json_file:
         json_file.write(model_json)
 
 
@@ -107,7 +107,7 @@ def save_model_tflite(h5_file):
     converter.target_spec.supported_ops = [lite.OpsSet.TFLITE_BUILTINS, lite.OpsSet.SELECT_TF_OPS]
     converter._experimental_lower_tensor_list_ops = False
     tflite_model = converter.convert()
-    open("model.tflite", "wb").write(tflite_model)
+    open("res/model.tflite", "wb").write(tflite_model)
 
 
 if __name__ == '__main__':
@@ -125,4 +125,4 @@ if __name__ == '__main__':
     #     train_model(lstm_model, X, y)
     # else:
     #     exit()
-    save_model_tflite('action.h5')
+    save_model_tflite('res/action.h5')

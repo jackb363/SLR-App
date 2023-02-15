@@ -4,6 +4,10 @@ import mediapipe as mp
 import os
 from multiprocessing import Process
 from natsort import natsorted
+import json
+import pytube
+from moviepy.video.io.VideoFileClip import VideoFileClip
+import random
 
 # Holistic model
 mp_holistic = mp.solutions.holistic
@@ -67,7 +71,7 @@ def get_files(path):
 # function to pad .npy files to a specified number
 def pad_npy(npy_dir, current_files, new_file_max):
     # create numpy zeros array of same dimension as other files
-    zeros_array = np.array([np.zeros(33*4), np.zeros(468*4), np.zeros(21*3), np.zeros(21*3)])
+    zeros_array = np.array([np.zeros(33 * 4), np.zeros(468 * 4), np.zeros(21 * 3), np.zeros(21 * 3)])
     # loop to create new .npy files and copy them to a directory
     for copy_frame in range(current_files, new_file_max):
         padded_file = zeros_array
@@ -108,3 +112,35 @@ def delete_all_files_in_dir(dir_path):
 # extracts numeric part of filename
 def extract_number(file_name):
     return int(os.path.splitext(file_name)[0])
+
+
+# checks json file against file list to find matches
+def match_from_json(json_file, curr_dataset_dir):
+    # get current words in dataset
+    actions = np.array(os.listdir(curr_dataset_dir))
+    file = open(json_file)
+    data = json.load(file)
+    for name in data:
+        if name['clean_text'] in actions:
+            print('Downloading vid for :', name['clean_text'])
+            download_from_yt(name['url'], name['clean_text'], name['start_time'], name['end_time'], curr_dataset_dir)
+
+# downloads from yt url and crops and resaves vid with start and end specs
+def download_from_yt(url, vid_name, start_time, end_time, save_dir):
+    yt = pytube.YouTube(url)
+    try:
+        video = yt.streams.filter(progressive=True, file_extension='mp4').order_by('resolution').desc().first()
+        video.download()
+        # Extract the subclip
+        filename = video.default_filename
+        clip = VideoFileClip(filename).subclip(start_time, end_time)
+
+        # Save the subclip to a file
+        new_filename = vid_name + str(random.randint(0, 10)) + '.mp4'
+        clip.write_videofile(os.path.join(save_dir, vid_name, new_filename))
+
+        # Delete the downloaded video file
+        os.remove(filename)
+    except Exception as e:
+        print('An error occurred: ', e)
+
