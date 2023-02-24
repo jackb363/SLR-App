@@ -12,7 +12,7 @@ from keras.models import model_from_json
 from tensorflow import lite
 
 # Path for exported data, numpy arrays
-DATA_PATH = os.path.join('C:/Users/Jack/Documents/WLASL_Refined_Dataset')
+DATA_PATH = os.path.join('C:/Users/Jack/Documents/MediaPipe_SmallDataset')
 # Actions that we try to detect
 actions = np.array(os.listdir(DATA_PATH))
 # Videos are going to be 30 frames in length
@@ -74,16 +74,16 @@ def train_model(model, X, y):
     # Train/test/val split 80/10/10
     X_train, X_rem, y_train, y_rem = train_test_split(X, y, train_size=0.8)
     X_test, X_val, y_test, y_val = train_test_split(X_rem, y_rem, test_size=0.5)
-    print(X_train.shape,'\n', X_test.shape, '\n', X_val.shape)
+    print(X_train.shape, '\n', X_test.shape, '\n', X_val.shape)
     # stops early if val score has not improved in 5 epochs
-    early_stopping = EarlyStopping(monitor='val_loss', patience=10)
+    early_stopping = EarlyStopping(monitor='val_loss', patience=100)
     # save weights if val score is better than previous
     model_checkpoint = ModelCheckpoint('../res/action.h5', save_best_only=True, monitor='val_loss', mode='min')
 
     model.compile(optimizer='Adam', loss='categorical_crossentropy',
                   metrics=['categorical_accuracy'])
 
-    model.fit(X_train, y_train, epochs=2000, validation_data=(X_val, y_val),
+    model.fit(X_train, y_train,  batch_size=8, epochs=2000, validation_data=(X_val, y_val),
               callbacks=[early_stopping, model_checkpoint, tb_callback])
 
     # final weights and structure of trained model saved
@@ -116,7 +116,7 @@ if __name__ == '__main__':
     # call to label and group frames of same videos
     sequences, labels = label_frame()
     max_len = max(len(seq) for seq in sequences)
-    X = pad_sequences(sequences, maxlen=max_len, padding='post', dtype='float32')
+    X = pad_sequences(sequences, value=0.1, maxlen=max_len, padding='post', dtype='float32')
     y = to_categorical(labels).astype(int)
     # call to create and save model struc
     lstm_model = build_model(max_len)
