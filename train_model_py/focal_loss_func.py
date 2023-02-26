@@ -9,6 +9,7 @@ def focal_loss(gamma=2.0, alpha=0.25):
         gamma: A positive focusing parameter. A lower value of gamma will focus more on the easy examples.
         alpha: A balancing parameter between the positive and negative class examples. A value of 0.5 gives equal weightage.
         """
+        y_true = tf.cast(y_true, tf.float32)
         epsilon = K.epsilon()
         y_pred = K.clip(y_pred, epsilon, 1.0 - epsilon)
 
