@@ -31,6 +31,7 @@ def mediapipe_detection(image, model):
     image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)  # COLOR COVERSION RGB 2 BGR
     return image, results
 
+
 # function uses mediapipe to extract keypoints from frames
 def extract_keypoints_holistic(results):
     pose = np.array([[res.x, res.y, res.visibility] for res in
@@ -47,7 +48,7 @@ def extract_keypoints_holistic(results):
 
 def extract_keypoints_hands(results):
     hands = np.array([[res.x, res.y, res.visibility] for res in
-                      results.multi_hand_landmarks]).flatten() if results.multi_hand_landmarks else(42*3)
+                      results.multi_hand_landmarks]).flatten() if results.multi_hand_landmarks else (42 * 3)
     return hands
 
 
@@ -137,6 +138,7 @@ def match_from_json(json_file, curr_dataset_dir):
             print('Downloading vid for :', name['clean_text'])
             download_from_yt(name['url'], name['clean_text'], name['start_time'], name['end_time'], curr_dataset_dir)
 
+
 # downloads from yt url and crops and resaves vid with start and end specs
 def download_from_yt(url, vid_name, start_time, end_time, save_dir):
     yt = pytube.YouTube(url)
@@ -155,4 +157,3 @@ def download_from_yt(url, vid_name, start_time, end_time, save_dir):
         os.remove(filename)
     except Exception as e:
         print('An error occurred: ', e)
-

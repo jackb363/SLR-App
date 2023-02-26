@@ -59,7 +59,7 @@ def build_model(max_seq_len):
     # LSTM model 6 Layers
     model = Sequential()
     # removes zeroed arrays from sequences / allows for var length sequences
-    model.add(Masking(mask_value=0.0, input_shape=(max_seq_len, 1662)))
+    model.add(Masking(mask_value=0.0, input_shape=(max_seq_len, 1629)))
     model.add(LSTM(32, return_sequences=True, activation='relu'))
     model.add(LSTM(64, return_sequences=False, activation='relu'))
     model.add(Dense(64, activation='relu'))
