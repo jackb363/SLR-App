@@ -60,8 +60,7 @@ def build_model(max_seq_len):
     model = Sequential()
     # removes zeroed arrays from sequences / allows for var length sequences
     model.add(Masking(mask_value=0.0, input_shape=(max_seq_len, 1662)))
-    model.add(LSTM(64, return_sequences=True, activation='relu'))
-    model.add(LSTM(128, return_sequences=True, activation='relu'))
+    model.add(LSTM(32, return_sequences=True, activation='relu'))
     model.add(LSTM(64, return_sequences=False, activation='relu'))
     model.add(Dense(64, activation='relu'))
     model.add(Dense(32, activation='relu'))
@@ -78,7 +77,7 @@ def train_model(model, X, y):
     # stops early if val score has not improved in 5 epochs
     early_stopping = EarlyStopping(monitor='val_loss', patience=100)
     # save weights if val score is better than previous
-    model_checkpoint = ModelCheckpoint('../res/action.h5', save_best_only=True, monitor='val_loss', mode='min')
+    model_checkpoint = ModelCheckpoint('../res/actionHands.h5', save_best_only=True, monitor='val_loss', mode='min')
 
     model.compile(optimizer='Adam', loss='categorical_crossentropy',
                   metrics=['categorical_accuracy'])
@@ -87,7 +86,7 @@ def train_model(model, X, y):
               callbacks=[early_stopping, model_checkpoint, tb_callback])
 
     # final weights and structure of trained model saved
-    model.save('../res/action.h5')
+    model.save('../res/actionHands.h5')
 
     # evaluates model after training
     loss, accuracy = model.evaluate(X_test, y_test, verbose=0)

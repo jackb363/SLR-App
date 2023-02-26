@@ -17,18 +17,24 @@ mp_drawing = mp.solutions.drawing_utils
 
 # function to call mediapipe detection
 def mediapipe_detection(image, model):
-    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)  # COLOR CONVERSION BGR 2 RGB
+    height, width, channels = image.shape  # get original image dimensions
+
+    new_height = 400  # set desired height
+    new_width = 650
+    resized_img = cv2.resize(image, (new_width, new_height))  # resize image
+    print('old height:', height, 'new height:', new_height, ' old width:', width, 'new width:', new_width)
+    image = cv2.cvtColor(resized_img, cv2.COLOR_BGR2RGB)  # COLOR CONVERSION BGR 2 RGB
     image.flags.writeable = False  # Image is no longer writeable
+
     results = model.process(image)  # Make prediction
     image.flags.writeable = True  # Image is now writeable
     image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)  # COLOR COVERSION RGB 2 BGR
     return image, results
 
-
 # function uses mediapipe to extract keypoints from frames
-def extract_keypoints(results):
-    pose = np.array([[res.x, res.y, res.z, res.visibility] for res in
-                     results.pose_landmarks.landmark]).flatten() if results.pose_landmarks else np.zeros(33 * 4)
+def extract_keypoints_holistic(results):
+    pose = np.array([[res.x, res.y, res.visibility] for res in
+                     results.pose_landmarks.landmark]).flatten() if results.pose_landmarks else np.zeros(33 * 3)
     face = np.array([[res.x, res.y, res.z] for res in
                      results.face_landmarks.landmark]).flatten() if results.face_landmarks else np.zeros(468 * 3)
     lh = np.array([[res.x, res.y, res.z] for res in
@@ -37,6 +43,12 @@ def extract_keypoints(results):
                    results.right_hand_landmarks.landmark]).flatten() if results.right_hand_landmarks else np.zeros(
         21 * 3)
     return np.concatenate([pose, face, lh, rh])
+
+
+def extract_keypoints_hands(results):
+    hands = np.array([[res.x, res.y, res.visibility] for res in
+                      results.multi_hand_landmarks]).flatten() if results.multi_hand_landmarks else(42*3)
+    return hands
 
 
 # function to superimpose keypoints over frame

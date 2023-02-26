@@ -31,24 +31,29 @@ def extract_np_arr(section_root_dir):
                 if not os.listdir(vid_dir):
                     # loads current vid to videocapture
                     cap = cv2.VideoCapture(os.path.join(root_dir, folder, vid))
-                    frames_length = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
-                    # iterates over each frame in a video
-                    for frame_num in range(frames_length):
-                        # Read feed
-                        ret, frame = cap.read()
-                        # Make detections
-                        try:
-                            image, results = util.mediapipe_detection(frame, holistic)
-                            # Draw landmarks
-                            util.draw_styled_landmarks(image, results)
-                            # get keypoints and save to .npy
-                            keypoints = util.extract_keypoints(results)
-                            # saves data keypoints to .npy file
-                            npy_path = os.path.join(root_dir, folder,
-                                                    str(vid_list.index(vid)), str(frame_num))
-                            np.save(npy_path, keypoints)
-                        except Exception as e:
-                            break
+                    width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))  # get video width
+                    height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))  # get video height
+
+                    # checks to see if a video is portrait, discarding if it is
+                    if height < width:
+                        frames_length = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+                        # iterates over each frame in a video
+                        for frame_num in range(frames_length):
+                            # Read feed
+                            ret, frame = cap.read()
+                            try:
+                                # Make detections
+                                image, results = util.mediapipe_detection(frame, holistic)
+                                # get keypoints and save to .npy
+                                keypoints = util.extract_keypoints_holistic(results)
+                                # saves data keypoints to .npy file
+                                npy_path = os.path.join(root_dir, folder,
+                                                        str(vid_list.index(vid)), str(frame_num))
+                                np.save(npy_path, keypoints)
+                            except Exception as e:
+                                break
+                    else:
+                        os.rmdir(vid_dir)
                     cap.release()
                     cv2.destroyAllWindows()
                 print('category: ', folder)

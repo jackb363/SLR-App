@@ -53,7 +53,7 @@ def detect_tflite(tflite_file_path):
             util.draw_styled_landmarks(image, results)
 
             # 2. Prediction logic
-            keypoints = util.extract_keypoints(results)
+            keypoints = util.extract_keypoints_holistic(results)
             keypoints = keypoints.astype('float32')
             sequence.append(keypoints)
             sequence = sequence[-30:]
