@@ -10,6 +10,7 @@ from keras.callbacks import EarlyStopping, ModelCheckpoint
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from keras.models import model_from_json
 from tensorflow import lite
+from focal_loss_func import focal_loss
 
 # Path for exported data, numpy arrays
 DATA_PATH = os.path.join('C:/Users/Jack/Documents/MediaPipe_SmallDataset')
@@ -79,10 +80,10 @@ def train_model(model, X, y):
     # save weights if val score is better than previous
     model_checkpoint = ModelCheckpoint('../res/actionHands.h5', save_best_only=True, monitor='val_loss', mode='min')
 
-    model.compile(optimizer='Adam', loss='categorical_crossentropy',
+    model.compile(optimizer='Adam', loss=focal_loss(gamma=2.0, alpha=0.25),
                   metrics=['categorical_accuracy'])
 
-    model.fit(X_train, y_train,  batch_size=8, epochs=2000, validation_data=(X_val, y_val),
+    model.fit(X_train, y_train,  batch_size=16, epochs=2000, validation_data=(X_val, y_val),
               callbacks=[early_stopping, model_checkpoint, tb_callback])
 
     # final weights and structure of trained model saved
