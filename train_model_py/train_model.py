@@ -1,14 +1,14 @@
 import numpy as np
 import os
+
 import util
 from tensorflow.keras.models import Sequential, load_model
 from tensorflow.keras.layers import LSTM, Dense, Masking
-from tensorflow.keras.callbacks import TensorBoard
+from tensorflow.keras.callbacks import TensorBoard, EarlyStopping, ModelCheckpoint
 from sklearn.model_selection import train_test_split
 from tensorflow.keras.utils import to_categorical
-from keras.callbacks import EarlyStopping, ModelCheckpoint
 from tensorflow.keras.preprocessing.sequence import pad_sequences
-from keras.models import model_from_json
+from tensorflow.keras.optimizers import Adam
 from tensorflow import lite
 from focal_loss_func import focal_loss
 
@@ -32,7 +32,7 @@ def label_frame():
     number_err = 0
     for action in actions:
 
-        # print(f'labelling videos of sign "{action}"')
+        print(f'labelling videos of sign "{action}"')
         only_dirs = [name for name in os.listdir(os.path.join(DATA_PATH, action)) if
                      os.path.isdir(os.path.join(DATA_PATH, action, name))]
         for npy_dir in only_dirs:
@@ -60,8 +60,9 @@ def build_model(max_seq_len):
     # LSTM model 6 Layers
     model = Sequential()
     # removes zeroed arrays from sequences / allows for var length sequences
-    model.add(Masking(mask_value=0.0, input_shape=(max_seq_len, 1629)))
-    model.add(LSTM(32, return_sequences=True, activation='relu'))
+    model.add(Masking(mask_value=0.0, input_shape=(max_seq_len, 225)))
+    model.add(LSTM(64, return_sequences=True, activation='relu'))
+    model.add(LSTM(128, return_sequences=True, activation='relu'))
     model.add(LSTM(64, return_sequences=False, activation='relu'))
     model.add(Dense(64, activation='relu'))
     model.add(Dense(32, activation='relu'))
@@ -75,19 +76,20 @@ def train_model(model, X, y):
     X_train, X_rem, y_train, y_rem = train_test_split(X, y, train_size=0.8)
     X_test, X_val, y_test, y_val = train_test_split(X_rem, y_rem, test_size=0.5)
     print(X_train.shape, '\n', X_test.shape, '\n', X_val.shape)
-    # stops early if val score has not improved in 5 epochs
-    early_stopping = EarlyStopping(monitor='val_loss', patience=100)
+    # lower learning rate of optimizer
+    # stops early if val score has not improved in 10 epochs
+    # early_stopping = EarlyStopping(monitor='val_loss', patience=10)
     # save weights if val score is better than previous
-    model_checkpoint = ModelCheckpoint('../res/actionHands.h5', save_best_only=True, monitor='val_loss', mode='min')
+    model_checkpoint = ModelCheckpoint('../res/actionNoFace.h5', save_best_only=True, monitor='val_loss', mode='min')
 
     model.compile(optimizer='Adam', loss=focal_loss(gamma=2.0, alpha=0.25),
                   metrics=['categorical_accuracy'])
 
     model.fit(X_train, y_train,  batch_size=16, epochs=2000, validation_data=(X_val, y_val),
-              callbacks=[early_stopping, model_checkpoint, tb_callback])
+              callbacks=[model_checkpoint, tb_callback])
 
     # final weights and structure of trained model saved
-    model.save('../res/actionHands.h5')
+    model.save('../res/actionNoFace.h5')
 
     # evaluates model after training
     loss, accuracy = model.evaluate(X_test, y_test, verbose=0)
@@ -116,7 +118,7 @@ if __name__ == '__main__':
     # call to label and group frames of same videos
     sequences, labels = label_frame()
     max_len = max(len(seq) for seq in sequences)
-    X = pad_sequences(sequences, value=0.1, maxlen=max_len, padding='post', dtype='float32')
+    X = pad_sequences(sequences, value=0.0, maxlen=max_len, padding='post', dtype='float32')
     y = to_categorical(labels).astype(int)
     # call to create and save model struc
     lstm_model = build_model(max_len)
