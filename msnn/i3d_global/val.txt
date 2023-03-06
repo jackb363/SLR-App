@@ -1,70 +1,70 @@
-00632.mp4 55 0
-accident3.mp4 167 0
-01206.mp4 87 1
-01209.mp4 39 1
-australia9.mp4 80 2
-australia5.mp4 121 2
-05239.mp4 48 3
-basketball3.mp4 80 3
-bath8.mp4 44 4
-bath5.mp4 131 4
-bathroom2.mp4 121 5
-05310.mp4 78 5
-bear9.mp4 74 6
-bear10.mp4 221 6
-beer3.mp4 189 7
-beer4.mp4 90 7
-before8.mp4 117 8
-05734.mp4 81 8
-05741.mp4 31 8
-iran2.mp4 60 9
-30561.mp4 44 9
-30849.mp4 77 10
-jacket4.mp4 61 10
-japan1.mp4 97 11
-japan10.mp4 92 11
-jealous9.mp4 60 12
-jealous10.mp4 153 12
-32382.mp4 35 13
-32377.mp4 102 13
-32449.mp4 35 14
-law6.mp4 77 14
-lead4.mp4 77 15
-32541.mp4 51 15
-66024.mp4 63 16
-32612.mp4 33 16
-32669.mp4 44 17
-leave0.mp4 54 17
-marry6.mp4 83 18
-marry2.mp4 47 18
-35114.mp4 43 19
-match3.mp4 84 19
-35159.mp4 116 20
-math10.mp4 61 20
-35299.mp4 42 21
-35289.mp4 92 21
-35344.mp4 51 22
-measure7.mp4 33 22
-meat2.mp4 71 23
-meat1.mp4 114 23
-35455.mp4 121 24
-35454.mp4 104 24
-meet3.mp4 104 25
-66112.mp4 71 25
-monkey2.mp4 154 26
-monkey9.mp4 89 26
-36735.mp4 42 27
-month6.mp4 55 27
-36780.mp4 71 28
-moon7.mp4 81 28
-today1.mp4 73 29
-today2.mp4 159 29
-tomato3.mp4 68 30
-66654.mp4 69 30
-58806.mp4 77 31
-tomorrow3.mp4 109 31
-59151.mp4 82 32
-59216.mp4 64 33
-59211.mp4 41 33
-watch3.mp4 169 34
-62439.mp4 85 34
+C:/Users/Jack/Documents/MediaPipe_SmallDataset/accident3.mp4 0
+C:/Users/Jack/Documents/MediaPipe_SmallDataset/00628.mp4 0
+C:/Users/Jack/Documents/MediaPipe_SmallDataset/adult0.mp4 1
+C:/Users/Jack/Documents/MediaPipe_SmallDataset/65024.mp4 1
+C:/Users/Jack/Documents/MediaPipe_SmallDataset/australia2.mp4 2
+C:/Users/Jack/Documents/MediaPipe_SmallDataset/australia3.mp4 2
+C:/Users/Jack/Documents/MediaPipe_SmallDataset/05230.mp4 3
+C:/Users/Jack/Documents/MediaPipe_SmallDataset/69225.mp4 3
+C:/Users/Jack/Documents/MediaPipe_SmallDataset/bath1.mp4 4
+C:/Users/Jack/Documents/MediaPipe_SmallDataset/05275.mp4 4
+C:/Users/Jack/Documents/MediaPipe_SmallDataset/65148.mp4 5
+C:/Users/Jack/Documents/MediaPipe_SmallDataset/bathroom10.mp4 5
+C:/Users/Jack/Documents/MediaPipe_SmallDataset/05487.mp4 6
+C:/Users/Jack/Documents/MediaPipe_SmallDataset/05498.mp4 6
+C:/Users/Jack/Documents/MediaPipe_SmallDataset/05705.mp4 7
+C:/Users/Jack/Documents/MediaPipe_SmallDataset/05708.mp4 7
+C:/Users/Jack/Documents/MediaPipe_SmallDataset/65167.mp4 8
+C:/Users/Jack/Documents/MediaPipe_SmallDataset/05749.mp4 8
+C:/Users/Jack/Documents/MediaPipe_SmallDataset/05743.mp4 8
+C:/Users/Jack/Documents/MediaPipe_SmallDataset/30566.mp4 9
+C:/Users/Jack/Documents/MediaPipe_SmallDataset/iran1.mp4 9
+C:/Users/Jack/Documents/MediaPipe_SmallDataset/jacket1.mp4 10
+C:/Users/Jack/Documents/MediaPipe_SmallDataset/jacket4.mp4 10
+C:/Users/Jack/Documents/MediaPipe_SmallDataset/japan3.mp4 11
+C:/Users/Jack/Documents/MediaPipe_SmallDataset/japan7.mp4 11
+C:/Users/Jack/Documents/MediaPipe_SmallDataset/jealous3.mp4 12
+C:/Users/Jack/Documents/MediaPipe_SmallDataset/30979.mp4 12
+C:/Users/Jack/Documents/MediaPipe_SmallDataset/32398.mp4 13
+C:/Users/Jack/Documents/MediaPipe_SmallDataset/32386.mp4 13
+C:/Users/Jack/Documents/MediaPipe_SmallDataset/law8.mp4 14
+C:/Users/Jack/Documents/MediaPipe_SmallDataset/32447.mp4 14
+C:/Users/Jack/Documents/MediaPipe_SmallDataset/32535.mp4 15
+C:/Users/Jack/Documents/MediaPipe_SmallDataset/32547.mp4 15
+C:/Users/Jack/Documents/MediaPipe_SmallDataset/32608.mp4 16
+C:/Users/Jack/Documents/MediaPipe_SmallDataset/learn2.mp4 16
+C:/Users/Jack/Documents/MediaPipe_SmallDataset/32662.mp4 17
+C:/Users/Jack/Documents/MediaPipe_SmallDataset/32655.mp4 17
+C:/Users/Jack/Documents/MediaPipe_SmallDataset/marry10.mp4 18
+C:/Users/Jack/Documents/MediaPipe_SmallDataset/marry2.mp4 18
+C:/Users/Jack/Documents/MediaPipe_SmallDataset/35119.mp4 19
+C:/Users/Jack/Documents/MediaPipe_SmallDataset/match7.mp4 19
+C:/Users/Jack/Documents/MediaPipe_SmallDataset/math5.mp4 20
+C:/Users/Jack/Documents/MediaPipe_SmallDataset/35158.mp4 20
+C:/Users/Jack/Documents/MediaPipe_SmallDataset/mean3.mp4 21
+C:/Users/Jack/Documents/MediaPipe_SmallDataset/mean9.mp4 21
+C:/Users/Jack/Documents/MediaPipe_SmallDataset/35346.mp4 22
+C:/Users/Jack/Documents/MediaPipe_SmallDataset/measure3.mp4 22
+C:/Users/Jack/Documents/MediaPipe_SmallDataset/meat9.mp4 23
+C:/Users/Jack/Documents/MediaPipe_SmallDataset/66109.mp4 23
+C:/Users/Jack/Documents/MediaPipe_SmallDataset/35455.mp4 24
+C:/Users/Jack/Documents/MediaPipe_SmallDataset/35452.mp4 24
+C:/Users/Jack/Documents/MediaPipe_SmallDataset/meet6.mp4 25
+C:/Users/Jack/Documents/MediaPipe_SmallDataset/35523.mp4 25
+C:/Users/Jack/Documents/MediaPipe_SmallDataset/36683.mp4 26
+C:/Users/Jack/Documents/MediaPipe_SmallDataset/monkey9.mp4 26
+C:/Users/Jack/Documents/MediaPipe_SmallDataset/month8.mp4 27
+C:/Users/Jack/Documents/MediaPipe_SmallDataset/month2.mp4 27
+C:/Users/Jack/Documents/MediaPipe_SmallDataset/36779.mp4 28
+C:/Users/Jack/Documents/MediaPipe_SmallDataset/66142.mp4 28
+C:/Users/Jack/Documents/MediaPipe_SmallDataset/today3.mp4 29
+C:/Users/Jack/Documents/MediaPipe_SmallDataset/58683.mp4 29
+C:/Users/Jack/Documents/MediaPipe_SmallDataset/58787.mp4 30
+C:/Users/Jack/Documents/MediaPipe_SmallDataset/tomato10.mp4 30
+C:/Users/Jack/Documents/MediaPipe_SmallDataset/tomorrow10.mp4 31
+C:/Users/Jack/Documents/MediaPipe_SmallDataset/58805.mp4 31
+C:/Users/Jack/Documents/MediaPipe_SmallDataset/59153.mp4 32
+C:/Users/Jack/Documents/MediaPipe_SmallDataset/59209.mp4 33
+C:/Users/Jack/Documents/MediaPipe_SmallDataset/59215.mp4 33
+C:/Users/Jack/Documents/MediaPipe_SmallDataset/watch10.mp4 34
+C:/Users/Jack/Documents/MediaPipe_SmallDataset/watch9.mp4 34
