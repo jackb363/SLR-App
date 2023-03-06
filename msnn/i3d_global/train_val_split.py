@@ -2,6 +2,7 @@ import os
 import random
 import cv2
 import shutil
+from train_model_py import util
 
 in_dir = 'C:/Users/Jack/Documents/MediaPipe_SmallDataset'
 categories = os.listdir(in_dir)
@@ -10,7 +11,7 @@ categories = os.listdir(in_dir)
 def get_anno_file():
     count = 0
     for folder in categories:
-        vids = os.listdir(os.path.join(in_dir, folder))
+        vids = util.get_files(os.path.join(in_dir, folder))
         # Shuffle the list of filenames randomly
         random.shuffle(vids)
 
@@ -21,32 +22,22 @@ def get_anno_file():
         test_videos = vids[split_idx:]
         names = []
         for video in train_videos:
-            cap = cv2.VideoCapture(os.path.join(in_dir, folder, video))
-            # Get the total number of frames in the video
-            frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
-            file_entry = video + ' ' + str(frame_count) + ' ' + str(count)
+            file_entry = in_dir + '/' + video + ' ' + str(count)
             names.append(file_entry)
-            cap.release()
         with open('train.txt', 'a') as f:
             for line in names:
                 f.write(line)
                 f.write('\n')
         names = []
         for video in test_videos:
-            cap = cv2.VideoCapture(os.path.join(in_dir, folder, video))
-            # Get the total number of frames in the video
-            frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
             # Release the video capture object
-            file_entry = video + ' ' + str(frame_count) + ' ' + str(count)
+            file_entry = in_dir + '/' + video + ' ' + str(count)
             names.append(file_entry)
-            cap.release()
         with open('val.txt', 'a') as f:
             for line in names:
                 f.write(line)
                 f.write('\n')
         count += 1
-
-
 def move_train_val(anno_file, out_dir, type_file):
     file = open(anno_file, 'r')
     data = file.read()
@@ -64,6 +55,7 @@ def move_train_val(anno_file, out_dir, type_file):
 
 
 if __name__ == '__main__' :
-    move_train_val('val.txt', 'C:/Users/Jack/Documents/train_val_split', 'val')
-    move_train_val('train.txt', 'C:/Users/Jack/Documents/train_val_split', 'train')
+    get_anno_file()
+    # move_train_val('val.txt', 'C:/Users/Jack/Documents/train_val_split', 'val')
+    # move_train_val('train.txt', 'C:/Users/Jack/Documents/train_val_split', 'train')
 
