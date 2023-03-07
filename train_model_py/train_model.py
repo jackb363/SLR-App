@@ -63,8 +63,8 @@ def build_model(max_seq_len):
     model.add(Masking(mask_value=0.0, input_shape=(max_seq_len, 225)))
     model.add(LSTM(64, return_sequences=True, activation='relu'))
     model.add(LSTM(128, return_sequences=True, activation='relu'))
-    model.add(LSTM(64, return_sequences=False, activation='relu'))
-    model.add(Dense(64, activation='relu'))
+    model.add(LSTM(192, return_sequences=False, activation='relu'))
+    model.add(Dense(96, activation='relu'))
     model.add(Dense(32, activation='relu'))
     # returns a number of values equal to action types in dataset
     model.add(Dense(actions.shape[0], activation='softmax'))
@@ -82,7 +82,7 @@ def train_model(model, X, y):
     # save weights if val score is better than previous
     model_checkpoint = ModelCheckpoint('../res/actionNoFace.h5', save_best_only=True, monitor='val_loss', mode='min')
 
-    model.compile(optimizer='Adam', loss=focal_loss(gamma=2.0, alpha=0.25),
+    model.compile(optimizer=Adam(learning_rate=0.001), loss=focal_loss(gamma=2.0, alpha=0.25),
                   metrics=['categorical_accuracy'])
 
     model.fit(X_train, y_train,  batch_size=16, epochs=2000, validation_data=(X_val, y_val),
@@ -113,12 +113,12 @@ def save_model_tflite(h5_file):
     tflite_model = converter.convert()
     open("../res/model.json", "wb").write(tflite_model)
 
-
 if __name__ == '__main__':
     # call to label and group frames of same videos
     sequences, labels = label_frame()
     max_len = max(len(seq) for seq in sequences)
-    X = pad_sequences(sequences, value=0.0, maxlen=max_len, padding='post', dtype='float32')
+    # print(max_len)
+    X = pad_sequences(sequences, value=0.0, maxlen=221, padding='post', dtype='float32')
     y = to_categorical(labels).astype(int)
     # call to create and save model struc
     lstm_model = build_model(max_len)
