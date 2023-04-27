@@ -106,24 +106,26 @@ def save_model_struc(model):
 
 # saves model struc and weights to tflite file
 def save_model_tflite(h5_file):
-    model = load_model(h5_file)
+    model = load_model(h5_file, custom_objects={'focal_loss_fixed': focal_loss()})
     converter = lite.TFLiteConverter.from_keras_model(model)
     converter.target_spec.supported_ops = [lite.OpsSet.TFLITE_BUILTINS, lite.OpsSet.SELECT_TF_OPS]
     converter._experimental_lower_tensor_list_ops = False
     tflite_model = converter.convert()
-    open("../res/model.json", "wb").write(tflite_model)
+    open("../res/model_lstm_gru.tflite", "wb").write(tflite_model)
 
 if __name__ == '__main__':
-    # call to label and group frames of same videos
-    sequences, labels = label_frame()
-    max_len = max(len(seq) for seq in sequences)
-    # print(max_len)
-    X = pad_sequences(sequences, value=0.0, maxlen=221, padding='post', dtype='float32')
-    y = to_categorical(labels).astype(int)
-    # call to create and save model struc
-    lstm_model = build_model(max_len)
-    save_model_struc(lstm_model)
+    # # call to label and group frames of same videos
+    # sequences, labels = label_frame()
+    # max_len = max(len(seq) for seq in sequences)
+    # # print(max_len)
+    # X = pad_sequences(sequences, value=0.0, maxlen=221, padding='post', dtype='float32')
+    # y = to_categorical(labels).astype(int)
+    # # call to create and save model struc
+    # lstm_model = build_model(max_len)
+    # save_model_struc(lstm_model)
+    #
+    # # call train and pass model struc, frame sequences and associated labels
+    # train_model(lstm_model, X, y)
 
-    # call train and pass model struc, frame sequences and associated labels
-    train_model(lstm_model, X, y)
-    #save_model_tflite('../res/action.h5')
+    save_model_tflite('../res/lstm_gru.h5')
+
